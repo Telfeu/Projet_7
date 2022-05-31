@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const { Users } = require("../models");
 const { Posts } = require("../models");
+const { Comments } = require("../models");
 const bcrypt = require("bcrypt");
 const { validateToken } = require("../middleware/Auth");
 const multer = require("../middleware/multer-config");
@@ -36,7 +37,12 @@ router.post("/login", async (req, res) => {
       { username: user.username, id: user.id },
       "importantsecret"
     );
-    res.json({ token: accessToken, username: username, id: user.id });
+    res.json({
+      token: accessToken,
+      username: username,
+      id: user.id,
+      role: user.role,
+    });
   });
 });
 
@@ -93,10 +99,11 @@ router.get("/profile/:id", validateToken, async (req, res) => {
 
   const profile = await Users.findByPk(id, {
     attributes: { exclude: ["password"] },
+    order: [[{ model: Posts }, "createdAt", "DESC"]],
     include: [
       {
         model: Posts,
-        include: [Users],
+        include: [{ model: Users }, { model: Comments }],
       },
     ],
   });

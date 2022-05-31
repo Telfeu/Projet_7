@@ -2,15 +2,23 @@ import React, { useContext } from "react";
 import Axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, Redirect } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fab } from "@fortawesome/free-brands-svg-icons";
+import { faCirclePlus } from "@fortawesome/free-solid-svg-icons";
 import { AuthContext } from "../helpers/AuthContext";
+
+import { useCookies } from "react-cookie";
 
 import Post from "../components/post";
 
 function Home() {
+  library.add(fab, faCirclePlus);
   const [listOfPosts, setListOfPosts] = useState([]);
   let navigate = useNavigate();
   const { authState } = useContext(AuthContext);
   console.log(authState);
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
   useEffect(() => {
     let unmounted = false;
@@ -19,10 +27,7 @@ function Home() {
     console.log("Récupération");
     Axios.get("http://localhost:3001/posts/", {
       headers: {
-        accessToken: document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("accessToken="))
-          .split("=")[1],
+        accessToken: cookies.accessToken,
       },
     })
       .then((res) => {
@@ -52,10 +57,7 @@ function Home() {
     e.preventDefault();
     Axios.delete(`http://localhost:3001/posts/${value}`, {
       headers: {
-        accessToken: document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("accessToken="))
-          .split("=")[1],
+        accessToken: cookies.accessToken,
       },
     }).then((res) => {
       console.log(res.data);
@@ -64,16 +66,17 @@ function Home() {
   };
 
   return (
-    <div className="postList">
-      {listOfPosts.reverse().map((value, key) => {
-        return (
-          <div className="post" key={key}>
-            <Post value={value} />
-          </div>
-        );
-      })}
-      <div className="submit__button">
-        <Link to={`/submit`}> Créer un post</Link>
+    <div className="container-sm  postList d-flex flex-column align-items-center">
+      <div className="postList col-sm-10 m-auto">
+        {listOfPosts.map((value, key) => {
+          return <Post value={value} key={key} />;
+        })}
+        <div className="submit">
+          <Link to={`/submit`}>
+            {" "}
+            <FontAwesomeIcon icon={faCirclePlus} className="submit__button" />
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -13,6 +13,8 @@ import {
   Outlet,
 } from "react-router-dom";
 
+import { useCookies } from "react-cookie";
+
 export default function Login(e) {
   // Valeurs login
 
@@ -23,11 +25,17 @@ export default function Login(e) {
 
   const [success, setSuccess] = useState(false);
 
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+
   const { setAuthState } = useContext(AuthContext);
   let location = useLocation();
+  const navigate = useNavigate();
   console.log(location);
 
   const login = (e) => {
+    e.preventDefault();
+    let expires = new Date();
+
     Axios.post("http://localhost:3001/auth/login", {
       username: usernameLogin,
       password: passwordLogin,
@@ -40,37 +48,45 @@ export default function Login(e) {
         setLoginStatus(response.data);
         setSuccess(true);
         console.log(response.data.token);
-        document.cookie = "accessToken=" + response.data.token;
+        setCookie("accessToken", response.data.token, {
+          path: "/",
+        });
         setAuthState({
           username: response.data.username,
           id: response.data.id,
           status: true,
+          role: response.data.role,
         });
-        return <Navigate to="/" replace />;
+        navigate("/");
       }
     });
   };
 
   return (
     <div className="App">
-      <div className="login">
-        <form onSubmit={login}>
-          <label>Nom d'utilisateur</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setUsernameLogin(event.target.value);
-            }}
-          />
-          <label>Mot de passe</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setPasswordLogin(event.target.value);
-            }}
-          />
-          <button>Se connecter</button>
-        </form>
+      <div className="container-sm">
+        <div className="login col-8 my-4 mx-auto p-0 d-flex">
+          <div className="loginPicture col-sm-1"></div>
+          <form className="d-flex-column col-sm-10 px-4 my-4" onSubmit={login}>
+            <label>Nom d'utilisateur</label>
+            <input
+              className="form-control"
+              type="text"
+              onChange={(event) => {
+                setUsernameLogin(event.target.value);
+              }}
+            />
+            <label>Mot de passe</label>
+            <input
+              className="form-control"
+              type="text"
+              onChange={(event) => {
+                setPasswordLogin(event.target.value);
+              }}
+            />
+            <button className="btn btn-primary my-4">Se connecter</button>
+          </form>
+        </div>
       </div>
     </div>
   );

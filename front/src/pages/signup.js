@@ -1,5 +1,15 @@
 import { useRef, useState, useEffect } from "react";
 import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Link,
+  useNavigate,
+  useLocation,
+  Navigate,
+  Outlet,
+} from "react-router-dom";
+import {
   faCheck,
   faTimes,
   faInfoCircle,
@@ -14,6 +24,8 @@ const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export default function Signup() {
   const userRef = useRef();
   const errRef = useRef();
+
+  const navigate = useNavigate();
 
   // Valeurs inscription
   const [username, setUsername] = useState("");
@@ -74,88 +86,143 @@ export default function Signup() {
       password: password,
     }).then(() => {
       console.log("Enregistré");
+      navigate("/login");
     });
   };
 
   return (
     <div className="App">
-      <section className="signup">
-        <form>
-          <label>
-            <FontAwesomeIcon
-              icon={faCheck}
-              className={validName ? "valid" : "hide"}
+      <section className="signup container-sm">
+        <div className="login col-8 my-4 mx-auto p-0 d-flex">
+          <div className="loginPicture col-sm-1"></div>
+          <form className="d-flex-column col-sm-10 px-4 my-4">
+            <label>
+              <FontAwesomeIcon
+                icon={faCheck}
+                className={validName ? "valid" : "hide"}
+              />
+              <FontAwesomeIcon
+                icon={faTimes}
+                className={validName || !username ? "hide" : "invalid"}
+              />
+              Pseudo
+            </label>
+            <input
+              type="text"
+              className="form-control"
+              ref={userRef}
+              autoComplete="off"
+              onChange={(event) => {
+                setUsername(event.target.value);
+              }}
             />
-            <FontAwesomeIcon
-              icon={faTimes}
-              className={validName || !username ? "hide" : "invalid"}
+            <p
+              id="uidnote"
+              className={
+                userFocus && username && !validName
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              Entre 4 et 24 caractères.
+              <br />
+              Doit commencer par une lettre.
+            </p>
+            <label>Email</label>
+            <input
+              type="text"
+              className="form-control"
+              onChange={(event) => {
+                setEmail(event.target.value);
+              }}
             />
-            Pseudo
-          </label>
-          <input
-            type="text"
-            ref={userRef}
-            autoComplete="off"
-            onChange={(event) => {
-              setUsername(event.target.value);
-            }}
-          />
-          <p
-            id="uidnote"
-            className={
-              userFocus && username && !validName ? "instructions" : "offscreen"
-            }
-          >
-            <FontAwesomeIcon icon={faInfoCircle} />
-            Entre 4 et 24 caractères.
-            <br />
-            Doit commencer par une lettre.
-          </p>
-          <label>Email</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setEmail(event.target.value);
-            }}
-          />
-          <label>Confirmer votre email</label>
-          <input
-            type="text"
-            onChange={(event) => {
-              setmatchEmail(event.target.value);
-            }}
-          />
-          <label>Mot de passe</label>
-          <input
-            type="password"
-            id="password"
-            onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-          />
+            <p
+              id="uidnote"
+              className={
+                mailFocus && email && !validMail ? "instructions" : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              Email non valide
+            </p>
+            <label>Confirmer votre email</label>
+            <input
+              type="text"
+              className="form-control"
+              onChange={(event) => {
+                setmatchEmail(event.target.value);
+              }}
+            />
+            <p
+              id="uidnote"
+              className={
+                matchMailFocus && matchEmail && !validMatchMail
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              La confirmation de l'email ne correspond pas
+            </p>
+            <label>Mot de passe</label>
+            <input
+              type="password"
+              className="form-control"
+              id="password"
+              onChange={(event) => {
+                setPassword(event.target.value);
+              }}
+            />
+            <p
+              id="uidnote"
+              className={
+                passwordFocus && password && !validPassword
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              Le mot de passe doit comporter au moins une majuscule et un
+              chiffre
+            </p>
 
-          <label htmlFor="confirm_pwd">Confirmer votre mot de passe</label>
-          <input
-            type="password"
-            id="confirm_pwd"
-            onChange={(event) => setmatchPassword(event.target.value)}
-            required
-          />
-          <button
-            disabled={
-              !validName ||
-              !validPassword ||
-              !validMatch ||
-              !validMail ||
-              !validMatchMail
-                ? true
-                : false
-            }
-            onClick={signUp}
-          >
-            S'inscrire
-          </button>
-        </form>
+            <label htmlFor="confirm_pwd">Confirmer votre mot de passe</label>
+            <input
+              type="password"
+              className="form-control"
+              id="confirm_pwd"
+              onChange={(event) => setmatchPassword(event.target.value)}
+              required
+            />
+            <p
+              id="uidnote"
+              className={
+                matchFocus && matchPassword && !validMatch
+                  ? "instructions"
+                  : "offscreen"
+              }
+            >
+              <FontAwesomeIcon icon={faInfoCircle} />
+              Les mots de passes ne correspondent pas
+            </p>
+            <button
+              className="btn btn-primary my-4"
+              disabled={
+                !validName ||
+                !validPassword ||
+                !validMatch ||
+                !validMail ||
+                !validMatchMail
+                  ? true
+                  : false
+              }
+              onClick={signUp}
+            >
+              S'inscrire
+            </button>
+          </form>
+        </div>
       </section>
     </div>
   );

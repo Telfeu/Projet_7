@@ -9,8 +9,13 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
+import "./css/bootstrap.min.css";
 import "./App.css";
+
 import Axios from "axios";
+
+import { useCookies } from "react-cookie";
+import { CookiesProvider } from "react-cookie";
 
 import { AuthContext } from "./helpers/AuthContext";
 
@@ -20,6 +25,7 @@ import Home from "./pages/home";
 import Post from "./pages/post";
 import Profile from "./pages/profile";
 import Submit from "./pages/submit";
+import Edit from "./pages/edit";
 
 function App() {
   const [authState, setAuthState] = React.useState({
@@ -29,20 +35,21 @@ function App() {
     role: false,
   });
 
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
+
+  console.log(authState);
+
   console.log(authState);
 
   React.useEffect(() => {
-    if (document.cookie) {
+    if (cookies.accessToken) {
       Axios.get("http://localhost:3001/auth/", {
         headers: {
-          accessToken: document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            .split("=")[1],
+          accessToken: cookies.accessToken,
         },
       }).then((res) => {
         if (res.data.error) {
-          setAuthState({ ...authState, status: false });
+          setAuthState({ username: "", id: 0, status: false, role: false });
         } else {
           console.log(res.data);
           setAuthState({
@@ -56,35 +63,39 @@ function App() {
     }
   }, []);
 
-  const logout = async (e) => {
+  const logout = (e) => {
     e.preventDefault();
     console.log("Déconnexion");
-    setAuthState({ ...authState, status: false });
-    document.cookie =
-      "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    setAuthState({ username: "", id: 0, status: false, role: false });
+    console.log(authState);
+    console.log(cookies.accessToken);
+    removeCookie("accessToken", {
+      path: "/",
+    });
+    console.log(authState);
+    console.log(cookies.accessToken);
+    console.log("Déconnexion fini");
     window.location.reload(false);
   };
 
   function RequireAuth({ children }: { children: JSX.Element }) {
     let location = useLocation();
-    if (document.cookie) {
+    console.log(cookies.accessToken);
+    if (cookies.accessToken && cookies.accessToken !== "undefined") {
       Axios.get("http://localhost:3001/auth/", {
         headers: {
-          accessToken: document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            .split("=")[1],
+          accessToken: cookies.accessToken,
         },
       }).then((res) => {
         if (res.data.error) {
           setAuthState({ ...authState, status: false });
-          return <Navigate to="/login" state={{ from: location }} replace />;
+          return <Navigate to="/login" />;
         }
       });
     } else {
       console.log(authState.status);
       if (authState.status === false) {
-        return <Navigate to="/login" state={{ from: location }} replace />;
+        return <Navigate to="/login" />;
       }
     }
     console.log(children);
@@ -92,71 +103,105 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <AuthContext.Provider value={{ authState, setAuthState }}>
-        <BrowserRouter>
-          <div className="navbar">
-            <div className="links">
-              {!authState.status ? (
-                <>
-                  <Link to="/signup">S'inscrire</Link>
-                  <Link to="/login"> Se connecter </Link>
-                </>
-              ) : (
-                <>
-                  <Link to="/">Accueil</Link>
-                  <Link to={`/profile/${authState.id}`}> Profil</Link>
-                  <button onClick={logout}>Logout</button>
-                </>
-              )}
-            </div>
-            <div className="profileContainer">
-              <h1>{authState.username}</h1>
-            </div>
-          </div>
-          <Routes>
-            <Route path="/login" exact element={<Login />} />
-            <Route path="/signup" exact element={<Signup />} />
-            <Route
-              path="/"
-              exact
-              element={
-                <RequireAuth>
-                  <Home />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/post/:id"
-              exact
-              element={
-                <RequireAuth>
-                  <Post />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/submit"
-              exact
-              element={
-                <RequireAuth>
-                  <Submit />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/profile/:id"
-              exact
-              element={
-                <RequireAuth>
-                  <Profile />
-                </RequireAuth>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
-      </AuthContext.Provider>
-    </div>
+    <CookiesProvider>
+      <div className="App">
+        <AuthContext.Provider value={{ authState, setAuthState }}>
+          <BrowserRouter>
+            <header>
+              <div className="navbar navbar-expand-lg navbar-light bg-light">
+                <div className="container-sm">
+                  <div className="navbar-nav d-flex align-items-center">
+                    <img
+                      src={
+                        process.env.PUBLIC_URL +
+                        "/icon-left-font-monochrome-white.png"
+                      }
+                      className="navbar__logo navbar-brand flex-fill"
+                    />
+                    {!authState.status ? (
+                      <>
+                        <Link to="/signup" className="nav-link">
+                          S'inscrire
+                        </Link>
+                        <Link to="/login" className="nav-link">
+                          {" "}
+                          Se connecter{" "}
+                        </Link>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/" className="nav-link">
+                          Accueil
+                        </Link>
+                        <Link
+                          to={`/profile/${authState.id}`}
+                          className="nav-link"
+                        >
+                          {" "}
+                          {authState.username}
+                        </Link>
+                        <button className="btn btn-danger" onClick={logout}>
+                          Se déconnecter
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </header>
+            <Routes>
+              <Route path="/login" exact element={<Login />} />
+              <Route path="/signup" exact element={<Signup />} />
+              <Route
+                path="/"
+                exact
+                element={
+                  <RequireAuth>
+                    <Home />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/post/:id"
+                exact
+                element={
+                  <RequireAuth>
+                    <Post />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/submit"
+                exact
+                element={
+                  <RequireAuth>
+                    <Submit />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/edit/:id"
+                exact
+                element={
+                  <RequireAuth>
+                    <Edit />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/profile/:id"
+                exact
+                element={
+                  <RequireAuth>
+                    <Profile />
+                  </RequireAuth>
+                }
+              />
+            </Routes>
+          </BrowserRouter>
+        </AuthContext.Provider>
+      </div>
+    </CookiesProvider>
   );
 }
 

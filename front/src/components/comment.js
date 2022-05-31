@@ -2,9 +2,11 @@ import React, { Component, useContext } from "react";
 import Axios from "axios";
 import { Link, useNavigate, Redirect } from "react-router-dom";
 import { AuthContext } from "../helpers/AuthContext";
+import { useCookies } from "react-cookie";
 
 function DisplayComment({ value, key }) {
   console.log(value);
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
   const deleteComment = (e, value) => {
     e.preventDefault();
     console.log("Commentaire supprimé");
@@ -13,10 +15,7 @@ function DisplayComment({ value, key }) {
       `http://localhost:3001/posts/${value.PostId}/comments/${value.id}`,
       {
         headers: {
-          accessToken: document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            .split("=")[1],
+          accessToken: cookies.accessToken,
         },
       }
     ).then((res) => {
@@ -28,15 +27,19 @@ function DisplayComment({ value, key }) {
   const { authState } = useContext(AuthContext);
 
   return (
-    <div className="commentBody">
-      {value.commentBody}
+    <div className="card">
+      <div className="card-header">
+        <Link to={`/profile/${value.UserId}`}> {value.User.username} </Link>
+      </div>
+      <div className="card-body d-flex">
+        <p>{value.commentBody}</p>
+      </div>
+
       <div className="footer">
-        <div className="username">
-          <Link to={`/profile/${value.UserId}`}> {value.User.username} </Link>
-        </div>
         {value.UserId === authState.id ? (
           <>
             <button
+              className="btn btn-primary m-2"
               value={value.id}
               onClick={(e) => deleteComment(e, e.target.value)}
             >

@@ -3,6 +3,7 @@ import Axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../helpers/AuthContext";
+import { useCookies } from "react-cookie";
 
 import PostBody from "../components/post";
 import CommentBody from "../components/comment";
@@ -12,6 +13,7 @@ function PostPage() {
   const postId = useParams();
   const [commentText, setCommentText] = useState("");
   const { authState } = useContext(AuthContext);
+  const [cookies, setCookie, removeCookie] = useCookies(["accessToken"]);
 
   const [isLoading, setLoading] = useState(true);
   console.log(Post);
@@ -25,10 +27,7 @@ function PostPage() {
     console.log("Récupération");
     Axios.get(`http://localhost:3001/posts/${postId.id}`, {
       headers: {
-        accessToken: document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("accessToken="))
-          .split("=")[1],
+        accessToken: cookies.accessToken,
       },
     })
       .then((res) => {
@@ -61,10 +60,7 @@ function PostPage() {
       { commentBody: commentText },
       {
         headers: {
-          accessToken: document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("accessToken="))
-            .split("=")[1],
+          accessToken: cookies.accessToken,
         },
       }
     ).then((res) => {
@@ -78,10 +74,7 @@ function PostPage() {
   const deletePost = (e) => {
     Axios.delete(`http://localhost:3001/posts/${postId.id}`, {
       headers: {
-        accessToken: document.cookie
-          .split("; ")
-          .find((row) => row.startsWith("accessToken="))
-          .split("=")[1],
+        accessToken: cookies.accessToken,
       },
     }).then((res) => {
       console.log(res.data);
@@ -95,20 +88,25 @@ function PostPage() {
   }
   if (isLoading === false) {
     return (
-      <div className="postComments">
-        <div className="post">
+      <div className="postComments container-sm d-flex flex-column align-items-center">
+        <div className="post col-sm-10 m-auto">
           <PostBody value={Post} />
         </div>
-        <div className="submitComment">
+        <div className="submitComment col-sm-10 m-auto">
           <form onSubmit={submitComment}>
-            <label>Commenter</label>
-            <input
-              type="textarea"
-              onChange={(event) => {
-                setCommentText(event.target.value);
-              }}
-            />
-            <button>Commenter</button>
+            <div className="form-floating">
+              <textarea
+                className="form-control"
+                id="commentTextArea"
+                type="textarea"
+                placeholder="Leave a comment here"
+                onChange={(event) => {
+                  setCommentText(event.target.value);
+                }}
+              ></textarea>
+              <label for="commentTextArea">Commenter</label>
+            </div>
+            <button className="btn btn-primary my-3">Commenter</button>
           </form>
         </div>
 
@@ -116,7 +114,7 @@ function PostPage() {
           <>
             {Post.Comments.map((value, key) => {
               return (
-                <div key={key} className="comment">
+                <div key={key} className="comment col-sm-10 m-auto">
                   <CommentBody value={value} />
                 </div>
               );
