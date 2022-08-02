@@ -1,0 +1,249 @@
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hide {
+  display: none;
+}
+
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}
+
+.postList {
+  position: relative;
+}
+
+.navbar {
+  background-color: #091f43 !important;
+}
+
+.nav-link {
+  color: white !important;
+  font-weight: bold;
+}
+
+.navbar__logo {
+  height: 5rem;
+  width: 10rem;
+  background-image: url("assets/icon-left-font-monochrome-white.svg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: 0;
+}
+
+.navbar-toggler-icon {
+  color: white !important;
+}
+.profilePicture__mini {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 2rem;
+  object-fit: cover;
+}
+
+.submit {
+  position: fixed;
+
+  z-index: 10;
+  bottom: 1rem;
+  right: 1rem;
+  width: 4rem;
+}
+
+.submit__button {
+  color: #091f43;
+
+  font-size: 4rem;
+}
+
+.card {
+  margin: 2rem 0;
+}
+
+.card-title {
+  font-size: 1rem;
+}
+
+.post__Picture {
+  max-height: 400px;
+  min-width: 60%;
+  max-width: 80%;
+  margin: auto;
+}
+
+.card-text {
+  width: 80%;
+}
+
+.card-header,
+.card-footer {
+  background-color: white !important;
+}
+
+.card-header {
+  background-color: #d1515a !important;
+  padding: 1rem;
+  color: white;
+  height: fit-content;
+}
+
+.word-wrap {
+  width: 100%;
+  word-wrap: break-all;
+}
+
+.card-header a {
+  color: white;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.card-footer {
+  padding-top: 1rem;
+  background-color: #d1515a !important;
+}
+
+.card-footer p {
+  color: white;
+}
+
+.btn-primary {
+  background-color: #091f43 !important;
+  border: none;
+  font-weight: bold;
+}
+
+.btn-primary:hover {
+  background-color: #153a75 !important;
+  transition: 0.33s ease-in-out;
+}
+
+.post__link {
+  text-decoration: none;
+  color: black;
+  width: 100%;
+}
+
+.sidebar {
+  padding: 0.5rem 0.5rem 2rem;
+  border-radius: 0.5rem;
+  height: fit-content;
+  color: white;
+  font-weight: bold;
+}
+
+.login {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  border-radius: 10px;
+}
+
+.loginPicture {
+  background-color: #d1515a;
+  border-radius: 10px 0 0 10px;
+}
+
+.btn__active,
+.btn__active:hover {
+  background-color: rgb(255, 255, 255);
+  border-radius: 0;
+  border-bottom: none !important;
+  font-weight: bold;
+}
+
+.btn__inactive,
+.btn__inactive:hover {
+  background-color: rgb(146, 146, 146);
+  border-radius: 0;
+  border-bottom: none !important;
+}
+
+.fa-comment-dots {
+  font-size: 1.3rem;
+  color: #091f43;
+}
+
+.dropdown-item:focus,
+.dropdown-item:hover {
+  background: none !important;
+}
+
+.pfp {
+  width: 100%;
+}
+
+.upload__picture {
+  font-size: 2rem;
+  cursor: pointer;
+  color: white;
+}
+
+.profile {
+  overflow: hidden;
+}
+.profilePicture__changebutton {
+  position: absolute;
+  background-color: #091f43;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 3rem;
+  bottom: -1rem;
+  right: -1rem;
+}
+
+.profilePicture__block {
+  position: relative;
+
+  width: 6rem;
+}
+
+#profile__picture {
+  display: none;
+}
+
+.profilePicture {
+  width: 6rem;
+  height: 6rem;
+  border-radius: 6rem;
+  object-fit: cover;
+}
+
+.edit_profile {
+  z-index: 10;
+  top: 40%;
+}
+
+.blocker {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 2;
+}
+
+.heartButton {
+  position: relative;
+  height: 2rem;
+  width: 2rem;
+  background-color: rgb(66, 66, 66);
+  cursor: pointer;
+  overflow: hidden;
+  border: none;
+  transition-duration: 0.5s;
+}
+.is-active {
+  background: red;
+  transition-duration: 0.5s;
+}
+
+.heart {
+  position: absolute;
+  font-size: 2rem;
+  top: 0;
+  left: 0;
+  background-color: white;
+  mix-blend-mode: lighten;
+}
