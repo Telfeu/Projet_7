@@ -36,6 +36,7 @@ function Edit() {
       });
     }
     if (!newpostText) {
+      console.log(newtitle);
       const formData = new FormData();
       formData.append("postPicture", newpostImage);
       formData.append("title", newtitle);
@@ -54,25 +55,6 @@ function Edit() {
     }
   };
 
-  const editPicturePost = (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("postPicture", newpostImage);
-    formData.append("title", newtitle);
-
-    Axios.put(`http://localhost:3001/posts/${postId.id}`, formData, {
-      headers: {
-        accessToken: cookies.accessToken,
-      },
-    }).then((res) => {
-      if (res.data.error) {
-        window.alert(res.data.error);
-      } else {
-        navigate("/");
-      }
-    });
-  };
-
   useEffect(() => {
     let unmounted = false;
     let source = Axios.CancelToken.source();
@@ -85,10 +67,10 @@ function Edit() {
       .then((res) => {
         if (!unmounted) {
           setPostEdit(res.data);
-          setNewTitle(postEdit.title);
           if (postEdit.postText) {
             setNewPostText(postEdit.postText);
           }
+
           setLoading(false);
         }
       })
@@ -106,6 +88,11 @@ function Edit() {
       source.cancel("Cancelling in cleanup");
     };
   }, []);
+
+  useEffect(() => {
+    setNewTitle(postEdit.title);
+    console.log(postEdit.title);
+  }, [postEdit]);
 
   if (isLoading === true) {
     return <div>Chargement</div>;

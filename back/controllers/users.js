@@ -5,6 +5,7 @@ const { Likes } = require("../models");
 const bcrypt = require("bcrypt");
 const { sign } = require("jsonwebtoken");
 const { Op } = require("sequelize");
+const fs = require("fs");
 
 exports.signup = async (req, res) => {
   const { username, password, email } = req.body;
@@ -97,21 +98,39 @@ exports.changeemail = async (req, res) => {
 
 exports.changepicture = async (req, res) => {
   console.log(req.file);
+  const user = await Users.findOne({ where: { id: req.userId } });
   console.log(
     `${req.protocol}://${req.get("host")}/pictures/userpicture/${
       req.file.filename
     }`
   );
-  const newProfilePicture = `${req.protocol}://${req.get(
-    "host"
-  )}/pictures/userpicture/${req.file.filename}`;
+  const filename = user.userPicture.split("/userpicture/")[1];
 
-  console.log(newProfilePicture);
+  if (filename == "default.png") {
+    const newProfilePicture = `${req.protocol}://${req.get(
+      "host"
+    )}/pictures/userpicture/${req.file.filename}`;
 
-  Users.update(
-    { userPicture: newProfilePicture },
-    { where: { id: req.userId } }
-  );
+    console.log(newProfilePicture);
+
+    Users.update(
+      { userPicture: newProfilePicture },
+      { where: { id: req.userId } }
+    );
+  } else {
+    const newProfilePicture = `${req.protocol}://${req.get(
+      "host"
+    )}/pictures/userpicture/${req.file.filename}`;
+
+    console.log(newProfilePicture);
+    fs.unlink(`pictures/userpicture/${filename}`, () => {
+      Users.update(
+        { userPicture: newProfilePicture },
+        { where: { id: req.userId } }
+      );
+    });
+  }
+
   res.status(200).json("Photo modifié");
 };
 

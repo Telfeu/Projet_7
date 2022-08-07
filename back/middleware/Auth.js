@@ -16,7 +16,7 @@ const validateToken = async (req, res, next) => {
       const verifyUser = await Users.findByPk(req.userId);
       if (verifyUser === null) {
         console.log("Erreur");
-        res.end("Utilisateur non enregistré");
+        res.status(400).end("Utilisateur non enregistré");
       } else {
         req.userRole = verifyUser.role;
         req.user["role"] = req.userRole;
@@ -25,7 +25,7 @@ const validateToken = async (req, res, next) => {
       }
     }
   } catch (err) {
-    return res.json({ error: err });
+    return res.status(400).json({ error: err });
   }
 };
 

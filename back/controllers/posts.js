@@ -4,6 +4,7 @@ const { Posts } = require("../models");
 const { Users } = require("../models");
 const { Comments } = require("../models");
 const { Likes } = require("../models");
+const fs = require("fs");
 
 exports.getPosts = async (req, res) => {
   const PostsList = await Posts.findAll({
@@ -80,12 +81,15 @@ exports.editPost = async (req, res) => {
         newpost["postPicture"] = `${req.protocol}://${req.get(
           "host"
         )}/pictures/postpicture/${req.file.filename}`;
-        Posts.update(
-          { postPicture: newpost.postPicture, title: newpost.title },
-          {
-            where: { id: req.params.postId },
-          }
-        );
+        const filename = checkOwnership.postPicture.split("/postpicture/")[1];
+        fs.unlink(`pictures/postpicture/${filename}`, () => {
+          Posts.update(
+            { postPicture: newpost.postPicture, title: newpost.title },
+            {
+              where: { id: req.params.postId },
+            }
+          );
+        });
       } else {
         Posts.update(
           { title: newpost.title },
@@ -106,13 +110,17 @@ exports.deletePost = async (req, res) => {
     where: { id: req.params.postId, Userid: req.userId },
   });
   if (checkOwnership || req.userRole === true) {
-    await Posts.destroy({
-      where: {
-        id: req.params.postId,
-      },
-    }).then(() => {
-      console.log("Post supprimé");
-      res.status(200).json({ message: "Success" });
+    const filename = checkOwnership.postPicture.split("/postpicture/")[1];
+    fs.unlink(`pictures/postpicture/${filename}`, () => {
+      Posts.destroy({
+        where: {
+          id: req.params.postId,
+        },
+      }).then(() => {
+        console.log("Post supprimé");
+
+        res.status(200).json({ message: "Success" });
+      });
     });
   }
 };

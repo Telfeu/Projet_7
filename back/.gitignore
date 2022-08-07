@@ -1,5 +1,7 @@
 node_modules/
 
+!/pictures/userpicture/default.png
+
 # JPEG
 *.jpg
 *.jpeg
