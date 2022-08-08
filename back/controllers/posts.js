@@ -36,20 +36,16 @@ exports.getOnePost = async (req, res) => {
   if (post != null) {
     res.status(200).json(post);
   } else {
-    console.log("Le post n'existe pas");
     res.status(400).end("Aucun post");
   }
 };
 
 exports.createPost = async (req, res) => {
-  console.log(req.body);
   const post = req.body;
   if (req.file) {
-    console.log(req.file);
     post["postPicture"] = `${req.protocol}://${req.get(
       "host"
     )}/pictures/postpicture/${req.file.filename}`;
-    console.log(post);
   }
   post["UserId"] = req.userId;
   await Posts.create(post);
@@ -57,9 +53,7 @@ exports.createPost = async (req, res) => {
 };
 
 exports.editPost = async (req, res) => {
-  console.log(req.body);
   const newpost = req.body;
-  console.log(newpost.postText);
 
   const checkOwnership = await Posts.findOne({
     where: { id: req.params.postId, Userid: req.userId },
@@ -76,8 +70,6 @@ exports.editPost = async (req, res) => {
     }
     if (newpost.postText == null) {
       if (req.file) {
-        console.log("Modification image");
-        console.log(newpost);
         newpost["postPicture"] = `${req.protocol}://${req.get(
           "host"
         )}/pictures/postpicture/${req.file.filename}`;
@@ -113,7 +105,6 @@ exports.deletePost = async (req, res) => {
     where: { id: req.params.postId, Userid: req.userId },
   });
   if (checkOwnership || req.userRole === true) {
-    console.log(post.postPicture);
     if (post.postPicture) {
       const filename = post.postPicture.split("/postpicture/")[1];
       fs.unlink(`pictures/postpicture/${filename}`, () => {
@@ -122,8 +113,6 @@ exports.deletePost = async (req, res) => {
             id: req.params.postId,
           },
         }).then(() => {
-          console.log("Post supprimé");
-
           res.status(200).json({ message: "Success" });
         });
       });
@@ -133,8 +122,6 @@ exports.deletePost = async (req, res) => {
           id: req.params.postId,
         },
       }).then(() => {
-        console.log("Post supprimé");
-
         res.status(200).json({ message: "Success" });
       });
     }
@@ -142,12 +129,10 @@ exports.deletePost = async (req, res) => {
 };
 
 exports.likePost = async (req, res) => {
-  console.log(req.body);
   const checkLike = await Likes.findOne({
     where: { PostId: req.body.postId, UserId: req.userId },
   });
-  console.log();
-  console.log(checkLike);
+
   if (checkLike) {
     Posts.increment("numberLike", {
       by: -1,

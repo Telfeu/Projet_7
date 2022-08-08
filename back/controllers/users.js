@@ -33,15 +33,12 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
-  console.log(req.body);
 
   const user = await Users.findOne({ where: { username: username } });
 
   if (!user) res.status(400).json({ error: "Utilisateur inconnu" });
-  console.log(user);
 
   bcrypt.compare(password, user.password).then(async (match) => {
-    console.log(match);
     if (!match)
       res
         .status(400)
@@ -73,9 +70,7 @@ exports.checkNickAvailability = async (req, res) => {
 };
 
 exports.changepassword = async (req, res) => {
-  console.log(req.body);
   const { oldPassword, newPassword } = req.body;
-  console.log(oldPassword);
 
   const user = await Users.findOne({ where: { id: req.userId } });
 
@@ -90,7 +85,6 @@ exports.changepassword = async (req, res) => {
 };
 
 exports.changeemail = async (req, res) => {
-  console.log("aled");
   const { newEmail } = req.body;
 
   Users.update({ email: newEmail }, { where: { id: req.userId } })
@@ -101,21 +95,14 @@ exports.changeemail = async (req, res) => {
 };
 
 exports.changepicture = async (req, res) => {
-  console.log(req.file);
   const user = await Users.findOne({ where: { id: req.userId } });
-  console.log(
-    `${req.protocol}://${req.get("host")}/pictures/userpicture/${
-      req.file.filename
-    }`
-  );
+
   const filename = user.userPicture.split("/userpicture/")[1];
 
   if (filename == "default.png") {
     const newProfilePicture = `${req.protocol}://${req.get(
       "host"
     )}/pictures/userpicture/${req.file.filename}`;
-
-    console.log(newProfilePicture);
 
     Users.update(
       { userPicture: newProfilePicture },
@@ -126,7 +113,6 @@ exports.changepicture = async (req, res) => {
       "host"
     )}/pictures/userpicture/${req.file.filename}`;
 
-    console.log(newProfilePicture);
     fs.unlink(`pictures/userpicture/${filename}`, () => {
       Users.update(
         { userPicture: newProfilePicture },

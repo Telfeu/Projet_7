@@ -10,17 +10,16 @@ exports.getAllComments = async (req, res) => {
   if (comments.length !== 0) {
     res.status(200).json(comments);
   } else {
-    console.log("Aucun commentaire");
     res.status(400).end();
   }
 };
 
 exports.postComment = async (req, res) => {
   const comment = req.body;
-  console.log(req.params);
+
   comment["UserId"] = req.userId;
   comment["PostId"] = req.params.postId;
-  console.log(comment);
+
   await Comments.create(comment);
   res.status(200).json(comment);
 };
@@ -32,7 +31,6 @@ exports.deleteComment = async (req, res) => {
   });
 
   if (checkOwnership || req.userRole === true) {
-    console.log("Suppression");
     await Comments.destroy({
       where: {
         id: commentId,
