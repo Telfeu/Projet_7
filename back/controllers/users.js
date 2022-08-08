@@ -90,10 +90,14 @@ exports.changepassword = async (req, res) => {
 };
 
 exports.changeemail = async (req, res) => {
+  console.log("aled");
   const { newEmail } = req.body;
 
-  Users.update({ email: newEmail }, { where: { id: req.userId } });
-  res.status(200).json("Email modifié");
+  Users.update({ email: newEmail }, { where: { id: req.userId } })
+    .then(() => {
+      res.status(200).json("Email modifié");
+    })
+    .catch((error) => res.status(400).json({ error }));
 };
 
 exports.changepicture = async (req, res) => {

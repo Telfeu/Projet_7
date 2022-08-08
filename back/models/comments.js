@@ -6,8 +6,16 @@ module.exports = (sequelize, DataTypes) => {
     },
   });
   Comments.associate = (models) => {
-    Comments.belongsTo(models.Users);
-    Comments.belongsTo(models.Posts);
+    Comments.belongsTo(models.Users, {
+      onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
+    });
+    Comments.belongsTo(models.Posts, {
+      onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
+    });
   };
   return Comments;
 };

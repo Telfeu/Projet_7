@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
-const { Posts } = require("../models");
 const { Users } = require("../models");
+const { Posts } = require("../models");
 const { Comments } = require("../models");
 const { Likes } = require("../models");
 const fs = require("fs");
@@ -106,12 +106,28 @@ exports.editPost = async (req, res) => {
 };
 
 exports.deletePost = async (req, res) => {
+  const post = await Posts.findOne({
+    where: { id: req.params.postId },
+  });
   const checkOwnership = await Posts.findOne({
     where: { id: req.params.postId, Userid: req.userId },
   });
   if (checkOwnership || req.userRole === true) {
-    const filename = checkOwnership.postPicture.split("/postpicture/")[1];
-    fs.unlink(`pictures/postpicture/${filename}`, () => {
+    console.log(post.postPicture);
+    if (post.postPicture) {
+      const filename = post.postPicture.split("/postpicture/")[1];
+      fs.unlink(`pictures/postpicture/${filename}`, () => {
+        Posts.destroy({
+          where: {
+            id: req.params.postId,
+          },
+        }).then(() => {
+          console.log("Post supprimé");
+
+          res.status(200).json({ message: "Success" });
+        });
+      });
+    } else {
       Posts.destroy({
         where: {
           id: req.params.postId,
@@ -121,7 +137,7 @@ exports.deletePost = async (req, res) => {
 
         res.status(200).json({ message: "Success" });
       });
-    });
+    }
   }
 };
 

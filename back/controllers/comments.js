@@ -1,5 +1,5 @@
-const { Comments } = require("../models");
 const { Users } = require("../models");
+const { Comments } = require("../models");
 
 exports.getAllComments = async (req, res) => {
   const postId = req.params.postId;

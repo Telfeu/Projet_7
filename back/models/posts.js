@@ -21,11 +21,19 @@ module.exports = (sequelize, DataTypes) => {
   Posts.associate = (models) => {
     Posts.hasMany(models.Comments, {
       onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
     });
     Posts.hasMany(models.Likes, {
       onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
     });
-    Posts.belongsTo(models.Users);
+    Posts.belongsTo(models.Users, {
+      onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
+    });
   };
   return Posts;
 };

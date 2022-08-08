@@ -28,14 +28,20 @@ module.exports = (sequelize, DataTypes) => {
   Users.associate = (models) => {
     Users.hasMany(models.Posts, {
       onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
     });
 
     Users.hasMany(models.Comments, {
       onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
     });
 
     Users.hasMany(models.Likes, {
       onDelete: "cascade",
+      foreignKey: { allowNull: false },
+      hooks: true,
     });
   };
   return Users;

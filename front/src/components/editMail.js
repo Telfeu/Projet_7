@@ -53,6 +53,7 @@ function EditMailForm() {
       if (res.data.error) {
         window.alert(res.data.error);
       } else {
+        window.alert(res);
         window.location.reload(false);
       }
     });

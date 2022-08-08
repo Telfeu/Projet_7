@@ -99,6 +99,7 @@ function Signup() {
     })
       .then((res) => {
         window.alert(res.data);
+        window.location.reload(false);
       })
       .catch((error) => {
         window.alert(error.response.data.error);
@@ -108,17 +109,7 @@ function Signup() {
   return (
     <div className="col-12 my-4 mx-auto p-0 d-flex">
       <form className="d-flex-column col-12 col-lg-12 p-0 ">
-        <label>
-          <FontAwesomeIcon
-            icon={faCheck}
-            className={validName ? "valid" : "hide"}
-          />
-          <FontAwesomeIcon
-            icon={faTimes}
-            className={validName || !username ? "hide" : "invalid"}
-          />
-          Pseudo
-        </label>
+        <label>Pseudo</label>
         <input
           type="text"
           className="form-control"
@@ -206,6 +197,7 @@ function Signup() {
           }
         >
           <FontAwesomeIcon icon={faInfoCircle} />
+          Entre 8 et 24 caractères. <br />
           Le mot de passe doit comporter au moins une majuscule et un chiffre
         </p>
 
